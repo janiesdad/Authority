@@ -1,1 +1,1 @@
-{"root":["./src/App.tsx","./src/MidiPianoApp.tsx","./src/main.tsx"],"version":"5.9.2"}
+{"root":["./src/App.tsx","./src/MidiPianoApp.tsx","./src/main.tsx","./src/components/Button.tsx"],"version":"5.9.2"}
