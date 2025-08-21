@@ -11,6 +11,7 @@ import {
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { ROOT_NOTES, SCALE_DEGREES, type RootNote, type ScaleName, NOTE_TO_SEMITONE, getAllowedSemitones, quantizeSemitoneToScale } from "./lib/scales";
 
 // Placeholder brand logo; replace with your asset loader integration as needed
 const brandLogo = '' as unknown as string;
@@ -593,6 +594,8 @@ export default function MidiPianoApp() {
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [gainNode, setGainNode] = useState<GainNode | null>(null);
   const [synthParams, setSynthParams] = useState({ attack: 0.25, filter: 0.3, distortion: 0.7, pitchBend: 0.6 });
+  const [root, setRoot] = useState<RootNote>("C");
+  const [scale, setScale] = useState<ScaleName>("Major");
 
   useEffect(() => {
     const preventScroll = (e: TouchEvent) => { e.preventDefault(); };
@@ -645,7 +648,12 @@ export default function MidiPianoApp() {
         };
 
         const pitchMultiplier = Math.pow(2, (synthParams.pitchBend - 0.5) * 2);
-        const frequency = (noteFrequencies[note] || 440) * pitchMultiplier;
+        // Quantize: map note to nearest allowed semitone in current key/scale
+        // Compute semitone offset from C4 (C=0, C#=1 ...)
+        const semitone = NOTE_TO_SEMITONE[note] ?? 0;
+        const quantizedSemitone = quantizeSemitoneToScale(semitone, root, scale);
+        const quantizedNoteFreq = 261.63 * Math.pow(2, (quantizedSemitone - 0) / 12);
+        const frequency = quantizedNoteFreq * pitchMultiplier;
 
         filter.type = "lowpass";
         filter.frequency.setValueAtTime(200 + synthParams.filter * 8000, audioContext.currentTime);
@@ -681,7 +689,7 @@ export default function MidiPianoApp() {
         oscillator.stop(audioContext.currentTime + 0.5);
       }
     },
-    [audioContext, gainNode, synthParams]
+    [audioContext, gainNode, synthParams, root, scale]
   );
 
   const handleKeyPress = useCallback(
@@ -750,7 +758,13 @@ export default function MidiPianoApp() {
             <div className="relative touch-none">
               <div className="flex">
                 {whiteKeys.map((note) => (
-                  <PianoKey key={note} note={note} isPressed={pressedKeys.has(note)} onPress={handleKeyPress} onRelease={handleKeyRelease} />
+                  <PianoKey
+                    key={note}
+                    note={note}
+                    isPressed={pressedKeys.has(note)}
+                    onPress={handleKeyPress}
+                    onRelease={handleKeyRelease}
+                  />
                 ))}
               </div>
               <div className="absolute top-0 left-0">
@@ -760,6 +774,33 @@ export default function MidiPianoApp() {
               </div>
             </div>
             <Controls />
+          </div>
+          {/* Key/Scale selectors */}
+          <div className="flex items-center gap-4 text-white font-mono">
+            <label className="flex items-center gap-2">
+              <span>Key</span>
+              <select
+                className="bg-black border border-white rounded px-2 py-1"
+                value={root}
+                onChange={(e) => setRoot(e.target.value as RootNote)}
+              >
+                {ROOT_NOTES.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2">
+              <span>Scale</span>
+              <select
+                className="bg-black border border-white rounded px-2 py-1"
+                value={scale}
+                onChange={(e) => setScale(e.target.value as ScaleName)}
+              >
+                {Object.keys(SCALE_DEGREES).map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </label>
           </div>
           {activePrompt && <TaskPromptCard note={activePrompt} />}
         </div>

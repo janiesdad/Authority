@@ -2,6 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState, useEffect, useCallback, useRef, createContext, useContext, useMemo, } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { ROOT_NOTES, SCALE_DEGREES, NOTE_TO_SEMITONE, quantizeSemitoneToScale } from "./lib/scales";
 // Placeholder brand logo; replace with your asset loader integration as needed
 const brandLogo = '';
 // Audio context for sharing between components
@@ -422,6 +423,8 @@ export default function MidiPianoApp() {
     const [analyser, setAnalyser] = useState(null);
     const [gainNode, setGainNode] = useState(null);
     const [synthParams, setSynthParams] = useState({ attack: 0.25, filter: 0.3, distortion: 0.7, pitchBend: 0.6 });
+    const [root, setRoot] = useState("C");
+    const [scale, setScale] = useState("Major");
     useEffect(() => {
         const preventScroll = (e) => { e.preventDefault(); };
         const preventPullToRefresh = (e) => { if (e.touches.length === 1) {
@@ -470,7 +473,12 @@ export default function MidiPianoApp() {
                 F: 349.23, "F#": 369.99, G: 392.0, "G#": 415.3, A: 440.0, "A#": 466.16, B: 493.88, C2: 523.25,
             };
             const pitchMultiplier = Math.pow(2, (synthParams.pitchBend - 0.5) * 2);
-            const frequency = (noteFrequencies[note] || 440) * pitchMultiplier;
+            // Quantize: map note to nearest allowed semitone in current key/scale
+            // Compute semitone offset from C4 (C=0, C#=1 ...)
+            const semitone = NOTE_TO_SEMITONE[note] ?? 0;
+            const quantizedSemitone = quantizeSemitoneToScale(semitone, root, scale);
+            const quantizedNoteFreq = 261.63 * Math.pow(2, (quantizedSemitone - 0) / 12);
+            const frequency = quantizedNoteFreq * pitchMultiplier;
             filter.type = "lowpass";
             filter.frequency.setValueAtTime(200 + synthParams.filter * 8000, audioContext.currentTime);
             filter.Q.setValueAtTime(1 + synthParams.distortion * 10, audioContext.currentTime);
@@ -499,7 +507,7 @@ export default function MidiPianoApp() {
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.5);
         }
-    }, [audioContext, gainNode, synthParams]);
+    }, [audioContext, gainNode, synthParams, root, scale]);
     const handleKeyPress = useCallback((note) => {
         setPressedKeys((prev) => new Set(prev).add(note));
         playNote(note);
@@ -542,5 +550,5 @@ export default function MidiPianoApp() {
                 position: "fixed",
                 width: "100%",
                 height: "100%",
-            }, children: [_jsx("div", { className: "absolute top-8 left-1/2 transform -translate-x-1/2", children: brandLogo ? (_jsx("img", { src: brandLogo, alt: "Group Notes by The Janie Group", className: "h-16 w-auto object-contain filter invert" })) : (_jsx("div", { className: "h-16 w-48 border-2 border-white rounded grid place-items-center text-white font-mono", children: "LOGO" })) }), _jsxs("div", { className: "flex flex-col items-center gap-8 scale-115", children: [_jsx("div", { className: "text-white font-mono tracking-wider", children: "PLAY" }), _jsxs("div", { className: "flex items-center gap-8", children: [_jsx(Visualizer, {}), _jsxs("div", { className: "relative touch-none", children: [_jsx("div", { className: "flex", children: whiteKeys.map((note) => (_jsx(PianoKey, { note: note, isPressed: pressedKeys.has(note), onPress: handleKeyPress, onRelease: handleKeyRelease }, note))) }), _jsx("div", { className: "absolute top-0 left-0", children: ["C#", "D#", "F#", "G#", "A#"].map((note) => (_jsx(PianoKey, { note: note, isBlack: true, isPressed: pressedKeys.has(note), onPress: handleKeyPress, onRelease: handleKeyRelease }, note))) })] }), _jsx(Controls, {})] }), activePrompt && _jsx(TaskPromptCard, { note: activePrompt })] })] }) }));
+            }, children: [_jsx("div", { className: "absolute top-8 left-1/2 transform -translate-x-1/2", children: brandLogo ? (_jsx("img", { src: brandLogo, alt: "Group Notes by The Janie Group", className: "h-16 w-auto object-contain filter invert" })) : (_jsx("div", { className: "h-16 w-48 border-2 border-white rounded grid place-items-center text-white font-mono", children: "LOGO" })) }), _jsxs("div", { className: "flex flex-col items-center gap-8 scale-115", children: [_jsx("div", { className: "text-white font-mono tracking-wider", children: "PLAY" }), _jsxs("div", { className: "flex items-center gap-8", children: [_jsx(Visualizer, {}), _jsxs("div", { className: "relative touch-none", children: [_jsx("div", { className: "flex", children: whiteKeys.map((note) => (_jsx(PianoKey, { note: note, isPressed: pressedKeys.has(note), onPress: handleKeyPress, onRelease: handleKeyRelease }, note))) }), _jsx("div", { className: "absolute top-0 left-0", children: ["C#", "D#", "F#", "G#", "A#"].map((note) => (_jsx(PianoKey, { note: note, isBlack: true, isPressed: pressedKeys.has(note), onPress: handleKeyPress, onRelease: handleKeyRelease }, note))) })] }), _jsx(Controls, {})] }), _jsxs("div", { className: "flex items-center gap-4 text-white font-mono", children: [_jsxs("label", { className: "flex items-center gap-2", children: [_jsx("span", { children: "Key" }), _jsx("select", { className: "bg-black border border-white rounded px-2 py-1", value: root, onChange: (e) => setRoot(e.target.value), children: ROOT_NOTES.map((n) => (_jsx("option", { value: n, children: n }, n))) })] }), _jsxs("label", { className: "flex items-center gap-2", children: [_jsx("span", { children: "Scale" }), _jsx("select", { className: "bg-black border border-white rounded px-2 py-1", value: scale, onChange: (e) => setScale(e.target.value), children: Object.keys(SCALE_DEGREES).map((s) => (_jsx("option", { value: s, children: s }, s))) })] })] }), activePrompt && _jsx(TaskPromptCard, { note: activePrompt })] })] }) }));
 }
