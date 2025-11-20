@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ken DeHart III | AI Governance Consultant</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --panel: #171717;
+      --muted: #8a8a8a;
+      --text: #f5f5f5;
+      --stroke: #2a2a2a;
+      --accent: #c7a27c;
+      --max: 1100px;
+      --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), transparent 25%),
+                  radial-gradient(circle at 80% 30%, rgba(255,255,255,0.04), transparent 26%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      letter-spacing: -0.01em;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px;
+      border: 1px solid var(--stroke);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+      backdrop-filter: blur(6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      position: sticky;
+      top: 16px;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: clamp(32px, 5vw, 46px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .tagline {
+      font-size: 18px;
+      color: var(--muted);
+    }
+
+    .intro {
+      color: #d7d7d7;
+      font-size: 16px;
+      max-width: 720px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.02);
+      font-size: 13px;
+      color: #e3e3e3;
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    nav a {
+      padding: 10px 12px;
+      border: 1px solid var(--stroke);
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #efefef;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+
+    nav a:hover,
+    nav a:focus-visible {
+      background: rgba(255,255,255,0.05);
+      border-color: #3a3a3a;
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    main {
+      margin-top: 32px;
+      display: grid;
+      gap: 28px;
+    }
+
+    section {
+      background: rgba(15,15,15,0.7);
+      border: 1px solid var(--stroke);
+      border-radius: 20px;
+      padding: 24px 24px 20px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    h2 {
+      font-size: 18px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      color: #e9e9e9;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      padding: 18px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: #3d3d3d;
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .card-sub {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card p { color: #d7d7d7; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+      color: #f1f1f1;
+    }
+
+    .link-row {
+      display: flex;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .link-row a { color: var(--accent); }
+
+    .resume-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: #ffffff08;
+      color: #fdfdfd;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #e7d2bd, #c7a27c);
+      color: #0f0f0f;
+      border: none;
+      box-shadow: 0 14px 35px rgba(199,162,124,0.3);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    ul.timeline {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 6px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 720px) {
+      header { position: static; }
+      nav { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>Ken DeHart III</h1>
+        <p class="tagline">AI Governance Consultant · Responsible AI Strategist</p>
+        <p class="intro">
+          I help organizations design and deploy AI systems that are safe, compliant, and aligned with human values. My work blends governance frameworks, risk mitigation, and concise technical storytelling to guide leaders from policy to practice.
+        </p>
+      </div>
+      <div class="resume-actions">
+        <a class="btn primary" href="#" aria-label="Download resume">Download Resume</a>
+        <a class="btn" href="mailto:ken@example.com">Email</a>
+        <a class="btn" href="#projects">View Work</a>
+      </div>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#expertise">Expertise</a>
+        <a href="#experience">Experience</a>
+        <a href="#speaking">Speaking</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="chip-row">
+        <span class="chip">AI governance</span>
+        <span class="chip">Risk &amp; compliance</span>
+        <span class="chip">Policy design</span>
+        <span class="chip">Model oversight</span>
+        <span class="chip">Stakeholder comms</span>
+      </div>
+    </header>
+
+    <main>
+      <section id="projects">
+        <div class="section-header">
+          <h2>Recent Projects</h2>
+          <span class="meta">Impact-first case studies</span>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div>
+              <div class="card-title">Model Risk Playbook</div>
+              <div class="card-sub">2024 · Fortune 500 (NDA)</div>
+            </div>
+            <p>Designed a cross-functional governance playbook aligning LLM development with NIST AI RMF. Reduced model approval time by 30% while tightening evaluation gates.</p>
+            <div class="pill-row">
+              <span class="pill">NIST AI RMF</span>
+              <span class="pill">Policy drafting</span>
+              <span class="pill">Eval design</span>
+            </div>
+            <div class="link-row">
+              <a href="#">Summary</a>
+              <a href="#">Process</a>
+            </div>
+          </article>
+          <article class="card">
+            <div>
+              <div class="card-title">Responsible AI Scorecard</div>
+              <div class="card-sub">2024 · Tech Nonprofit</div>
+            </div>
+            <p>Built a lightweight scorecard to grade model use-cases across safety, privacy, and transparency. Enabled leadership to prioritize high-risk deployments with a single dashboard.</p>
+            <div class="pill-row">
+              <span class="pill">Governance</span>
+              <span class="pill">Risk scoring</span>
+              <span class="pill">Stakeholder mapping</span>
+            </div>
+            <div class="link-row">
+              <a href="#">Case study</a>
+              <a href="#">Download</a>
+            </div>
+          </article>
+          <article class="card">
+            <div>
+              <div class="card-title">Policy-to-Product Bridge</div>
+              <div class="card-sub">2023 · SaaS Startup</div>
+            </div>
+            <p>Translating EU AI Act requirements into actionable product tickets and acceptance criteria. Shortened compliance remediation cycles from 6 weeks to 2.</p>
+            <div class="pill-row">
+              <span class="pill">EU AI Act</span>
+              <span class="pill">Product ops</span>
+              <span class="pill">Technical writing</span>
+            </div>
+            <div class="link-row">
+              <a href="#">Overview</a>
+              <a href="#">Artifacts</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="expertise">
+        <div class="section-header">
+          <h2>Expertise</h2>
+          <span class="meta">Frameworks, methods, and focus areas</span>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="card-title">Governance &amp; Risk</div>
+            <p>Model lifecycle oversight, policy translation, and risk controls mapped to NIST AI RMF, ISO/IEC 42001, and emerging AI acts.</p>
+            <div class="pill-row">
+              <span class="pill">Policy design</span>
+              <span class="pill">Risk registers</span>
+              <span class="pill">LLM guardrails</span>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-title">Evaluation &amp; Assurance</div>
+            <p>Human + automated evaluation design for safety, bias, robustness, and alignment. Red-teaming practices and incident readiness.</p>
+            <div class="pill-row">
+              <span class="pill">Eval harnesses</span>
+              <span class="pill">Safety tests</span>
+              <span class="pill">Drift monitoring</span>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-title">Strategy &amp; Enablement</div>
+            <p>Executive briefings, stakeholder training, and crisp storytelling that links governance outcomes to product velocity and trust.</p>
+            <div class="pill-row">
+              <span class="pill">Workshops</span>
+              <span class="pill">Operating models</span>
+              <span class="pill">Change management</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="experience">
+        <div class="section-header">
+          <h2>Experience</h2>
+          <span class="meta">Selected roles &amp; leadership</span>
+        </div>
+        <ul class="timeline">
+          <li>
+            <span class="dot" aria-hidden="true"></span>
+            <div>
+              <div class="card-title">AI Governance Consultant · Independent</div>
+              <div class="card-sub">2022 — Present</div>
+              <p>Advising startups and enterprises on responsible AI practices, risk mitigation, and policy adoption across product and legal teams.</p>
+            </div>
+          </li>
+          <li>
+            <span class="dot" aria-hidden="true"></span>
+            <div>
+              <div class="card-title">Senior Policy Analyst · Civic Tech Lab</div>
+              <div class="card-sub">2019 — 2022</div>
+              <p>Drafted AI usage standards for public-sector pilots; led cross-agency alignment on transparency, auditability, and community engagement.</p>
+            </div>
+          </li>
+          <li>
+            <span class="dot" aria-hidden="true"></span>
+            <div>
+              <div class="card-title">Research Fellow · Ethics &amp; AI Center</div>
+              <div class="card-sub">2017 — 2019</div>
+              <p>Published on governance frameworks, algorithmic accountability, and practical oversight mechanisms for ML systems.</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section id="speaking">
+        <div class="section-header">
+          <h2>Speaking &amp; Writing</h2>
+          <span class="meta">Recent talks, briefs, and media</span>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="card-title">Keynote: "Operationalizing Responsible AI"</div>
+            <div class="card-sub">Responsible Tech Summit · 2024</div>
+            <p>Frameworks that connect governance principles to product roadmaps, with examples from regulated industries.</p>
+          </article>
+          <article class="card">
+            <div class="card-title">Brief: "Navigating the EU AI Act"</div>
+            <div class="card-sub">Policy Brief · 2024</div>
+            <p>Concise guidance for startups on risk classes, conformity assessments, and documentation readiness.</p>
+          </article>
+          <article class="card">
+            <div class="card-title">Panel: "Trust, Safety, and Velocity"</div>
+            <div class="card-sub">AI Product Forum · 2023</div>
+            <p>Discussed how to balance fast iteration with strong oversight—without shipping unsafe features.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="contact">
+        <div class="section-header">
+          <h2>Contact</h2>
+          <span class="meta">Let’s collaborate</span>
+        </div>
+        <div class="card">
+          <p>If you’re looking to ship AI responsibly—from policy through implementation—I can help build the frameworks, guardrails, and narratives to get you there.</p>
+          <div class="pill-row">
+            <span class="pill">Available for engagements</span>
+            <span class="pill">Workshops &amp; audits</span>
+            <span class="pill">Executive briefings</span>
+          </div>
+          <div class="resume-actions" style="margin-top: 10px;">
+            <a class="btn primary" href="mailto:ken@example.com">Email Ken</a>
+            <a class="btn" href="#">LinkedIn</a>
+            <a class="btn" href="#">Download resume</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      © 2024 Ken DeHart III — AI Governance Consultant
+    </footer>
+  </div>
+</body>
+</html>
